@@ -19,8 +19,15 @@ namespace RentalKendaraan_062.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string nama, string searchString)
         {
+
+
+            var menu = from m in _context.Kendaraan.Include(k => k.IdJenisKendaraanNavigation) select m;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                menu = menu.Where(s => s.NoPolisi.Contains(searchString) || s.NamaKendaraan.Contains(searchString) || s.NoStnk.Contains(searchString));
+            }
             var rentalkendaraanContext = _context.Customer.Include(c => c.IdGenderNavigation);
             return View(await rentalkendaraanContext.ToListAsync());
         }
