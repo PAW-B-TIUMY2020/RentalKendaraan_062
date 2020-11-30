@@ -4,14 +4,21 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RentalKendaraan_062.Models
 {
+
     public partial class KondisiKendaraan
     {
-        [Required(ErrorMessage = "ID Kondisi tidak boleh kosong")]
+        
+        public KondisiKendaraan()
+        {
+            Pengembalian = new HashSet<Pengembalian>();
+        }
+
         public int IdKondisi { get; set; }
 
         [Required(ErrorMessage = "Kondisi tidak boleh kosong")]
         public string NamaKondisi { get; set; }
 
-        public Pengembalian Pengembalian { get; set; }
+        public ICollection<Pengembalian> Pengembalian { get; set; }
+    
     }
 }

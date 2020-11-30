@@ -21,27 +21,35 @@ namespace RentalKendaraan_062.Controllers
         // GET: Peminjamen
         public async Task<IActionResult> Index(string ktsd, string searchString, string sortOrder, string currentFilter, int? pageNumber)
         {
+            //buat list untuk menyimpan ketersediaan
             var ktsdList = new List<string>();
-            var ktsdQuery = from d in _context.Peminjaman orderby d.IdKendaraanNavigation.NamaKendaraan select d.IdKendaraanNavigation.NamaKendaraan;
+
+            //query mengambil data
+            var ktsdQuery = from d in _context.Peminjaman orderby d.TglPeminjaman select d.TglPeminjaman.ToString();
+
             ktsdList.AddRange(ktsdQuery.Distinct());
 
+            //untuk menampilkan di view
             ViewBag.ktsd = new SelectList(ktsdList);
 
+
+            //panggil db context
             var menu = from m in _context.Peminjaman.Include(p => p.IdCustomerNavigation).Include(p => p.IdJaminanNavigation).Include(p => p.IdKendaraanNavigation) select m;
 
-            if(!string.IsNullOrEmpty(ktsd))
+            //untuk memilih dropdownlist ketersediaan
+            if (!string.IsNullOrEmpty(ktsd))
             {
-                menu = menu.Where(x => x.IdPeminjaman.ToString() == ktsd);
+                menu = menu.Where(x => x.TglPeminjaman.ToString() == ktsd);
             }
 
-            if(!string.IsNullOrEmpty(searchString))
+            //untuk search data
+            if (!string.IsNullOrEmpty(searchString))
             {
-                menu = menu.Where(s => s.TglPeminjaman.ToString().Contains(searchString) || s.Biaya.ToString().Contains(searchString) || s.IdCustomerNavigation.ToString().Contains(searchString) || s.IdJaminanNavigation.ToString().Contains(searchString));
+                menu = menu.Where(s => s.Biaya.ToString().Contains(searchString));
             }
 
-
-            ViewData["CurrentSort"] = sortOrder;
-
+            //mmebuat pagedlist
+            ViewData["CurrentShort"] = sortOrder;
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -50,17 +58,14 @@ namespace RentalKendaraan_062.Controllers
             {
                 searchString = currentFilter;
             }
-
             ViewData["CurrentFilter"] = searchString;
-            //var rentalkendaraanContext = _context.Peminjaman.Include(p => p.IdCustomerNavigation).Include(p => p.IdJaminanNavigation).Include(p => p.IdKendaraanNavigation);
-            //return View(await menu.ToListAsync());
 
+            //definisi jumlah data pada halaman
             int pageSize = 5;
-           
 
+            //untuk sorting
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
             switch (sortOrder)
             {
                 case "name_desc":
@@ -72,11 +77,14 @@ namespace RentalKendaraan_062.Controllers
                 case "date_desc":
                     menu = menu.OrderByDescending(s => s.TglPeminjaman);
                     break;
-                default:
+                default: //name ascending
                     menu = menu.OrderBy(s => s.IdCustomerNavigation.NamaCustomer);
                     break;
             }
+
             return View(await PaginatedList<Peminjaman>.CreateAsync(menu.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+
         }
 
         // GET: Peminjamen/Details/5

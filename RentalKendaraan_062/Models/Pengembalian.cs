@@ -8,19 +8,18 @@ namespace RentalKendaraan_062.Models
     {
         public int IdPengembalian { get; set; }
 
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Hanya Boleh diisi oleh angka")]
+        [Required(ErrorMessage = "Tanggal Wajib Diisi!")]
         public DateTime? TglPengembalian { get; set; }
 
-        [Required(ErrorMessage = "ID Peminjaman tidak boleh kosong")]
+
+        public int? Denda { get; set; }
         public int? IdPeminjaman { get; set; }
 
-        [Required(ErrorMessage = "ID Kondisi tidak boleh kosong")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Hanya boleh diisi angka")]
         public int? IdKondisi { get; set; }
 
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Hanya Boleh diisi oleh angka")]
-        public int? Denda { get; set; }
-
+        public KondisiKendaraan IdKondisiNavigation { get; set; }
         public Peminjaman IdPeminjamanNavigation { get; set; }
-        public KondisiKendaraan IdPengembalianNavigation { get; set; }
+        //public Pengembalian IdPengembalianNavigation { get; set; }
     }
 }

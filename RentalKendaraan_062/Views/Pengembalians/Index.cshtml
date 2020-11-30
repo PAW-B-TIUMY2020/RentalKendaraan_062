@@ -4,56 +4,63 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<h2>Tambah Data Kendaraan</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Tambah Data Pengembalian</a>
 </p>
+
+@using (Html.BeginForm("Index", "Pengembalians", FormMethod.Get))
+{
+    <p>
+        Tanggal Pengembalian: @Html.DropDownList("ktsd", "Pilih Tanggal")
+        Data Denda : @Html.TextBox("searchString")
+        <input type="submit" value="Filter" />
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.TglPengembalian)
+                @*@Html.DisplayName("Tgl Pengembalian")*@
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Tanggal Pengembalian</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdKondisi)
+                @Html.DisplayName("Denda")
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Denda)
+                @*@Html.DisplayName("Nama Kondisi")*@
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nama Kondisi</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdPeminjamanNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdPengembalianNavigation)
+                @Html.DisplayName("Tgl Peminjaman")
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TglPengembalian)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdKondisi)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Denda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdPeminjamanNavigation.IdPeminjaman)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdPengembalianNavigation.IdKondisi)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdPengembalian">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdPengembalian">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdPengembalian">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TglPengembalian)
+                </td>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.Denda)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdPeminjamanNavigation.IdPeminjaman)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdKondisiNavigation.NamaKondisi)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdPengembalian">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdPengembalian">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdPengembalian">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

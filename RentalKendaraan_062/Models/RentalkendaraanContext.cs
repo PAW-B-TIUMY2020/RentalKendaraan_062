@@ -213,11 +213,10 @@ namespace RentalKendaraan_062.Models
                     .HasForeignKey(d => d.IdPeminjaman)
                     .HasConstraintName("FK_Pengembalian_Peminjaman");
 
-                entity.HasOne(d => d.IdPengembalianNavigation)
-                    .WithOne(p => p.Pengembalian)
-                    .HasForeignKey<Pengembalian>(d => d.IdPengembalian)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Pengembalian_Kondisi_Kendaraan");
+                entity.HasOne(d => d.IdKondisiNavigation)
+                     .WithMany(p => p.Pengembalian)
+                     .HasForeignKey(d => d.IdKondisi)
+                     .HasConstraintName("FK__Pengembal__ID_Ko__3F466844");
             });
         }
     }

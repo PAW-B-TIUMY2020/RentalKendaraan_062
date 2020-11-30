@@ -11,10 +11,9 @@ namespace RentalKendaraan_062.Models
             Kendaraan = new HashSet<Kendaraan>();
         }
 
-        [Required(ErrorMessage = "ID Jenis kendaraan tidak boleh kosong")]
         public int IdJenisKendaraan { get; set; }
 
-        [Required(ErrorMessage = "Jenis kendaraan tidak boleh kosong")]
+        [Required(ErrorMessage = "Nama Jenis kendaraan tidak boleh kosong")]
         public string NamaJenisKendaraan { get; set; }
 
         public ICollection<Kendaraan> Kendaraan { get; set; }

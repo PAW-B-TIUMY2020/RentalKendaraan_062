@@ -19,11 +19,72 @@ namespace RentalKendaraan_062.Controllers
         }
 
         // GET: Pengembalians
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string ktsd, string searchString, string sortOrder, string currentFilter, int? pageNumber)
         {
-            var rentalkendaraanContext = _context.Pengembalian.Include(p => p.IdPeminjamanNavigation).Include(p => p.IdPengembalianNavigation);
-            return View(await rentalkendaraanContext.ToListAsync());
+            //buat list untuk menyimpan ketersediaan
+            var ktsdList = new List<string>();
+
+            //query mengambil data
+            var ktsdQuery = from d in _context.Pengembalian orderby d.TglPengembalian select d.TglPengembalian.ToString();
+
+            ktsdList.AddRange(ktsdQuery.Distinct());
+
+            //untuk menampilkan di view
+            ViewBag.ktsd = new SelectList(ktsdList);
+
+            //panggil db context
+            var menu = from m in _context.Pengembalian.Include(p => p.IdKondisiNavigation).Include(p => p.IdPeminjamanNavigation) select m;
+
+            //untuk memilih dropdownlist ketersediaan
+            if (!string.IsNullOrEmpty(ktsd))
+            {
+                menu = menu.Where(x => x.TglPengembalian.ToString() == ktsd);
+            }
+
+            //untuk search data
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                menu = menu.Where(s => s.Denda.ToString().Contains(searchString));
+            }
+
+            //mmebuat pagedlist
+            ViewData["CurrentShort"] = sortOrder;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString;
+
+            //definisi jumlah data pada halaman
+            int pageSize = 5;
+
+            //untuk sorting
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    menu = menu.OrderByDescending(s => s.IdKondisiNavigation.NamaKondisi);
+                    break;
+                case "Date":
+                    menu = menu.OrderBy(s => s.TglPengembalian);
+                    break;
+                case "date_desc":
+                    menu = menu.OrderByDescending(s => s.TglPengembalian);
+                    break;
+                default: //name ascending
+                    menu = menu.OrderBy(s => s.IdKondisiNavigation.NamaKondisi);
+                    break;
+            }
+
+            return View(await PaginatedList<Pengembalian>.CreateAsync(menu.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+       
 
         // GET: Pengembalians/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -34,8 +95,8 @@ namespace RentalKendaraan_062.Controllers
             }
 
             var pengembalian = await _context.Pengembalian
+                .Include(p => p.IdKondisiNavigation)
                 .Include(p => p.IdPeminjamanNavigation)
-                .Include(p => p.IdPengembalianNavigation)
                 .FirstOrDefaultAsync(m => m.IdPengembalian == id);
             if (pengembalian == null)
             {
@@ -136,7 +197,7 @@ namespace RentalKendaraan_062.Controllers
 
             var pengembalian = await _context.Pengembalian
                 .Include(p => p.IdPeminjamanNavigation)
-                .Include(p => p.IdPengembalianNavigation)
+                .Include(p => p.IdKondisiNavigation)
                 .FirstOrDefaultAsync(m => m.IdPengembalian == id);
             if (pengembalian == null)
             {

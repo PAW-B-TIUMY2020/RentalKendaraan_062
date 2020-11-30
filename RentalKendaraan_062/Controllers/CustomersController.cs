@@ -19,21 +19,67 @@ namespace RentalKendaraan_062.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index(string nama, string searchString)
+        public async Task<IActionResult> Index(string ktsd, string searchString, string sortOrder, string currentFilter, int? pageNumber)
         {
+            //buat list untuk menyimpan ketersediaan
+            var ktsdList = new List<string>();
 
+            //query mengambil data
+            var ktsdQuery = from d in _context.Customer orderby d.NamaCustomer select d.NamaCustomer;
+            ktsdList.AddRange(ktsdQuery.Distinct());
 
-            var menu = from m in _context.Kendaraan.Include(k => k.IdJenisKendaraanNavigation) select m;
+            //untuk menampilkan di view
+            ViewBag.ktsd = new SelectList(ktsdList);
+
+            //panggil db context
+            var menu = from m in _context.Customer.Include(c => c.IdGenderNavigation) select m;
+
+            //untuk memilih dropdownlist ketersediaan
+            if (!string.IsNullOrEmpty(ktsd))
+            {
+                menu = menu.Where(x => x.NamaCustomer == ktsd);
+            }
+
+            //untuk search data
             if (!string.IsNullOrEmpty(searchString))
             {
-                menu = menu.Where(s => s.NoPolisi.Contains(searchString) || s.NamaKendaraan.Contains(searchString) || s.NoStnk.Contains(searchString));
+                menu = menu.Where(s => s.Nik.Contains(searchString) || s.Alamat.Contains(searchString) ||
+                s.NoHp.Contains(searchString));
             }
-            var rentalkendaraanContext = _context.Customer.Include(c => c.IdGenderNavigation);
-            return View(await rentalkendaraanContext.ToListAsync());
+
+            //mmebuat pagedlist
+            ViewData["CurrentShort"] = sortOrder;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString;
+
+            //definisi jumlah data pada halaman
+            int pageSize = 5;
+
+            //untuk sorting
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    menu = menu.OrderByDescending(s => s.NamaCustomer);
+                    break;
+                default: //name ascending
+                    menu = menu.OrderBy(s => s.NamaCustomer);
+                    break;
+            }
+
+            return View(await PaginatedList<Customer>.CreateAsync(menu.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        // GET: Customers/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+    // GET: Customers/Details/5
+    public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {

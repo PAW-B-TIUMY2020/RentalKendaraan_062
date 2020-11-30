@@ -11,10 +11,9 @@ namespace RentalKendaraan_062.Models
             Peminjaman = new HashSet<Peminjaman>();
         }
 
-        [Required(ErrorMessage = "ID Jaminan tidak boleh kosong")]
         public int IdJaminan { get; set; }
 
-        [Required(ErrorMessage = "Jaminan tidak boleh kosong")]
+        [Required(ErrorMessage = "Nama jaminan tidak boleh kosng")]
         public string NamaJaminan { get; set; }
 
         public ICollection<Peminjaman> Peminjaman { get; set; }

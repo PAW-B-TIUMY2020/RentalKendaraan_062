@@ -4,50 +4,39 @@
     ViewData["Title"] = "Index";
 }
 
-<h4>Tambah Data Peminjaman</h4>
+<h2>Tambah Data Peminjaman</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Tambah Data baru</a>
 </p>
+
+@using (Html.BeginForm("Index", "Peminjamen", FormMethod.Get))
+{
+    <p>
+        Tanggal Peminjaman: @Html.DropDownList("ktsd", "Pilih Nama")
+        Cari Data Biaya : @Html.TextBox("searchString")
+        <input type="submit" value="Filter" />
+    </p>
+}
 <table class="table">
-    @{
-        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-    }
-
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex -1)"
-       asp-route-currentfilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled">
-        Previous
-    </a>
-
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex + 1)"
-       asp-route-currentfilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled">
-        Next
-    </a>
     <thead>
         <tr>
             <th>
-                @*@Html.DisplayNameFor(model => model.TglPeminjaman)*@
-                <asp-action ="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Tanggal Peminjaman</a>
+                @*@Html.DisplayName("Tanggal Peminjaman")*@
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Tanggal Peminjaman</a>
             </th>
             <th>
-                @* @Html.DisplayNameFor(model => model.Biaya) *@
-                <asp-action ="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nama Customer</a>
+                @Html.DisplayName("Biaya")
             </th>
             <th>
-                @* @Html.DisplayNameFor(model => model.IdCustomerNavigation)*@
+                @*@Html.DisplayName("Nama Customer")*@
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nama Customer</a>
             </th>
             <th>
-                @* @Html.DisplayNameFor(model => model.IdJaminanNavigation)*@
+                @Html.DisplayName("Nama Jaminan")
             </th>
             <th>
-                @* @Html.DisplayNameFor(model => model.IdKendaraanNavigation)*@
+                @Html.DisplayName("Nama kendaraan")
             </th>
             <th></th>
         </tr>
@@ -97,3 +86,23 @@
         }
     </tbody>
 </table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>

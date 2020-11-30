@@ -16,20 +16,18 @@ namespace RentalKendaraan_062.Models
         [Required(ErrorMessage = "Nama Customer tidak boleh kosong")]
         public string NamaCustomer { get; set; }
 
-        [RegularExpression("^[0-9]*$", ErrorMessage="Hanya Boleh diisi oleh angka")]
+        //harus angka
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Hanya boleh diisi oleh angka")]
         public string Nik { get; set; }
 
-        [Required(ErrorMessage = "Alamat tidak boleh kosong")]
+
         public string Alamat { get; set; }
 
-        [MinLength(10, ErrorMessage="No HP")]
+        //form yang disi min 10 max 13
+        [MinLength(10, ErrorMessage = "No HP minimal 10 angka")]
+        [MaxLength(13, ErrorMessage = "No HP maxsimal 13 angka")]
         public string NoHp { get; set; }
-
-        [Required(ErrorMessage = "ID Gender tidak boleh kosong")]
         public int? IdGender { get; set; }
-
-        
-
 
         public Gender IdGenderNavigation { get; set; }
         public ICollection<Peminjaman> Peminjaman { get; set; }
